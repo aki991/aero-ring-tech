@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ART Hardware Emulator</title>
+<style>
+/* ── Design tokens (dark-only, self-contained) ────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:          #050D18;
+  --surface:     #1C2F46;
+  --card:        rgba(16,31,51,0.85);
+  --card-solid:  #101F33;
+  --border:      rgba(38,198,218,0.15);
+  --border-h:    rgba(38,198,218,0.40);
+  --accent:      #26C6DA;
+  --accent2:     #42A5F5;
+  --teal:        #26C6DA;
+  --teal2:       #115E77;
+  --a-glow:      rgba(38,198,218,0.18);
+  --a-glow2:     rgba(38,198,218,0.08);
+  --text:        #FFFFFF;
+  --muted:       #A0B4C8;
+  --green:       #22d3a5;
+  --green-g:     rgba(34,211,165,0.25);
+  --red:         #f87171;
+  --orange:      #fb923c;
+  --card-shadow: 0 4px 24px rgba(38,198,218,0.08);
+  --inp-shadow:  0 0 0 2px rgba(38,198,218,0.18);
+  --inp-bg:      rgba(5,13,24,0.65);
+  --hdr-bg:      linear-gradient(135deg,#050D18 0%,#0D1B2C 50%,#0A1628 100%);
+  --hdr-border:  rgba(38,198,218,0.20);
+  --panel-glow:  radial-gradient(ellipse at 50% -10%, rgba(38,198,218,0.14) 0%, transparent 65%);
+  --btn-glow:    0 0 20px rgba(38,198,218,0.45), 0 0 40px rgba(38,198,218,0.18);
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+html, body { min-height:100vh; background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; }
+body {
+  background-image:
+    radial-gradient(ellipse at 15% 25%, rgba(38,198,218,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(66,165,245,0.04) 0%, transparent 55%);
+  padding-bottom: 48px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.emu-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; height:58px;
+  background:var(--hdr-bg); border-bottom:1px solid var(--hdr-border);
+  position:sticky; top:0; z-index:100;
+}
+.emu-header-left { display:flex; align-items:center; gap:12px; }
+.emu-title { font-weight:800; font-size:1rem; letter-spacing:-0.02em; }
+.emu-dev-badge {
+  font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;
+  padding:3px 10px; border-radius:999px;
+  background:rgba(251,146,60,.14); color:var(--orange);
+  border:1px solid rgba(251,146,60,.30);
+}
+.emu-header-right { display:flex; align-items:center; gap:10px; }
+.conn-pill {
+  display:flex; align-items:center; gap:7px;
+  font-size:.73rem; color:var(--muted);
+  padding:5px 14px; border-radius:999px;
+  background:var(--a-glow2); border:1px solid var(--border);
+}
+.conn-dot {
+  width:7px; height:7px; border-radius:50%; background:var(--muted); flex-shrink:0;
+  transition:background .4s, box-shadow .4s;
+}
+.conn-dot.live {
+  background:var(--green);
+  box-shadow:0 0 0 2px var(--green-g), 0 0 8px var(--green);
+  animation:blink 2.5s ease-in-out infinite;
+}
+.btn-open-app {
+  display:flex; align-items:center; gap:7px;
+  padding:7px 15px; border-radius:10px;
+  background:var(--a-glow2); border:1px solid var(--border);
+  color:var(--accent); font-size:.78rem; font-weight:600;
+  cursor:pointer; font-family:inherit; text-decoration:none;
+  transition:background .2s, border-color .2s, box-shadow .2s;
+}
+.btn-open-app:hover { background:var(--a-glow); border-color:var(--border-h); box-shadow:0 0 14px rgba(38,198,218,.18); }
+
+/* ── Body layout ─────────────────────────────────────────────────────────── */
+.emu-body { max-width:980px; margin:0 auto; padding:24px 20px; display:flex; flex-direction:column; gap:18px; animation:fadeIn .25s ease; }
+
+/* ── Section cards ────────────────────────────────────────────────────────── */
+.emu-card {
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:20px; backdrop-filter:blur(10px); box-shadow:var(--card-shadow);
+  position:relative; overflow:hidden;
+}
+.emu-card::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:var(--panel-glow);
+}
+.emu-sec-label {
+  font-size:.58rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:2.5px; color:var(--muted); margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+.emu-sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+.hint-txt { font-size:.7rem; color:var(--muted); margin-top:8px; opacity:.7; }
+
+/* ── 8-Slot Dock ─────────────────────────────────────────────────────────── */
+.slot-grid {
+  display:grid; grid-template-columns:repeat(8,1fr); gap:10px;
+}
+@media (max-width:700px) { .slot-grid { grid-template-columns:repeat(4,1fr); } }
+@media (max-width:420px) { .slot-grid { grid-template-columns:repeat(2,1fr); } }
+
+.slot-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:12px 6px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  text-align:center; transition:border-color .25s, box-shadow .25s;
+}
+.slot-card.occupied {
+  border-color:rgba(38,198,218,.45);
+  box-shadow:0 0 14px rgba(38,198,218,.12);
+}
+.slot-num { font-size:.55rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); }
+.slot-id {
+  font-size:.6rem; font-family:monospace; font-weight:700;
+  color:var(--accent); min-height:16px; line-height:1.3; word-break:break-all;
+}
+.slot-id.empty { color:var(--muted); opacity:.45; }
+.slot-btn {
+  padding:5px 8px; border-radius:7px; border:none;
+  font-size:.65rem; font-weight:600; cursor:pointer; font-family:inherit;
+  transition:background .15s, color .15s, transform .1s;
+  width:100%;
+}
+.slot-btn:active { transform:scale(.93); }
+.slot-btn.insert { background:rgba(38,198,218,.10); color:var(--accent); border:1px solid rgba(38,198,218,.25); }
+.slot-btn.insert:hover { background:rgba(38,198,218,.22); border-color:var(--accent); }
+.slot-btn.remove { background:rgba(248,113,113,.10); color:var(--red); border:1px solid rgba(248,113,113,.25); }
+.slot-btn.remove:hover { background:rgba(248,113,113,.20); border-color:var(--red); }
+
+/* ── Ring reader ──────────────────────────────────────────────────────────── */
+.reader-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.emu-select {
+  flex:1; min-width:180px;
+  background:var(--inp-bg); border:1px solid var(--border); border-radius:9px;
+  padding:9px 13px; color:var(--text); font-size:.83rem; font-family:inherit;
+  transition:border-color .2s, box-shadow .2s; cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a0b4c8' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; padding-right:34px;
+}
+.emu-select:focus { outline:none; border-color:var(--accent); box-shadow:var(--inp-shadow); }
+.emu-select option { background:var(--card-solid); color:var(--text); }
+
+/* ── Generic action buttons ────────────────────────────────────────────── */
+.hw-row { display:flex; gap:10px; flex-wrap:wrap; }
+.hw-btn {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 18px; border-radius:12px; border:none;
+  font-size:.82rem; font-weight:600; cursor:pointer; font-family:inherit;
+  transition:box-shadow .2s, transform .1s, background .15s;
+}
+.hw-btn:active { transform:scale(.96); }
+.hw-btn-teal  { background:rgba(38,198,218,.12); color:var(--accent); border:1px solid rgba(38,198,218,.28); }
+.hw-btn-teal:hover  { background:rgba(38,198,218,.24); border-color:var(--accent); box-shadow:0 0 16px rgba(38,198,218,.2); }
+.hw-btn-green { background:rgba(34,211,165,.10); color:var(--green); border:1px solid rgba(34,211,165,.28); }
+.hw-btn-green:hover { background:rgba(34,211,165,.22); border-color:var(--green); box-shadow:0 0 16px rgba(34,211,165,.2); }
+
+/* ── Race telemetry ────────────────────────────────────────────────────── */
+.race-top {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin-bottom:18px; flex-wrap:wrap;
+}
+.race-toggle {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 20px; border-radius:12px; border:none;
+  font-size:.84rem; font-weight:600; cursor:pointer; font-family:inherit;
+  transition:box-shadow .2s, transform .1s, background .2s;
+}
+.race-toggle:active { transform:scale(.96); }
+.race-toggle.start { background:linear-gradient(135deg,var(--orange) 0%,#c2410c 100%); color:#fff; }
+.race-toggle.start:hover { box-shadow:0 0 22px rgba(251,146,60,.45); transform:translateY(-1px); }
+.race-toggle.stop { background:transparent; color:var(--orange); border:1px solid rgba(251,146,60,.40); }
+.race-toggle.stop:hover { background:rgba(251,146,60,.12); border-color:var(--orange); }
+
+.race-badge {
+  font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+  padding:4px 12px; border-radius:999px;
+  background:var(--a-glow2); color:var(--muted); border:1px solid var(--border);
+  transition:background .2s, color .2s, border-color .2s;
+}
+.race-badge.live {
+  background:rgba(251,146,60,.12); color:var(--orange); border-color:rgba(251,146,60,.38);
+  animation:blink 2s ease-in-out infinite;
+}
+
+.pigeon-rows { display:flex; flex-direction:column; gap:10px; }
+.pigeon-row {
+  display:grid; grid-template-columns:100px 1fr 76px 20px 56px;
+  align-items:center; gap:10px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:11px 14px;
+  transition:border-color .2s, box-shadow .2s;
+}
+.pigeon-row.has-data { border-color:rgba(38,198,218,.30); }
+.pig-lbl { display:flex; align-items:center; gap:8px; font-size:.79rem; font-weight:600; }
+.pig-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.pig-slider {
+  width:100%; appearance:none; height:4px; border-radius:2px;
+  background:var(--border); outline:none; cursor:pointer;
+}
+.pig-slider::-webkit-slider-thumb {
+  appearance:none; width:16px; height:16px; border-radius:50%;
+  background:var(--accent); cursor:pointer;
+  box-shadow:0 0 6px rgba(38,198,218,.5);
+  transition:box-shadow .15s;
+}
+.pig-slider::-webkit-slider-thumb:hover { box-shadow:0 0 12px rgba(38,198,218,.75); }
+.pig-slider::-moz-range-thumb {
+  width:16px; height:16px; border-radius:50%; border:none;
+  background:var(--accent); cursor:pointer;
+}
+.pig-alt { font-size:.86rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--accent2); text-align:right; font-family:monospace; }
+.pig-auto-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.pig-auto-chk { width:15px; height:15px; cursor:pointer; accent-color:var(--accent); }
+.pig-auto-lbl { font-size:.52rem; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+.pig-inject {
+  padding:5px 8px; border-radius:7px; border:1px solid rgba(38,198,218,.25);
+  background:rgba(38,198,218,.08); color:var(--accent);
+  font-size:.68rem; font-weight:600; cursor:pointer; font-family:inherit;
+  transition:background .15s, border-color .15s;
+  white-space:nowrap;
+}
+.pig-inject:hover { background:rgba(38,198,218,.20); border-color:var(--accent); }
+.pig-inject:active { transform:scale(.93); }
+
+/* ── Event log ───────────────────────────────────────────────────────────── */
+.emu-log {
+  background:var(--inp-bg); border:1px solid var(--border); border-radius:10px;
+  padding:10px 14px; font-family:monospace; font-size:.71rem; color:var(--muted);
+  height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:1px;
+}
+.emu-log::-webkit-scrollbar { width:3px; }
+.emu-log::-webkit-scrollbar-thumb { background:rgba(38,198,218,.2); border-radius:2px; }
+.log-e { line-height:1.55; white-space:pre; }
+.log-e.out  { color:var(--accent); }
+.log-e.recv { color:var(--green); }
+.log-e.warn { color:var(--orange); }
+
+/* ── LoRa handshake status banner ───────────────────────────────────── */
+.emu-lora-banner {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px; border-radius:14px;
+  background:rgba(251,146,60,0.08); border:1px solid rgba(251,146,60,0.30);
+  font-size:.88rem; font-weight:600; color:var(--orange);
+}
+.emu-lora-banner.connected {
+  background:rgba(34,211,165,0.08); border-color:rgba(34,211,165,0.30);
+  color:var(--green);
+}
+.lora-banner-dot {
+  width:11px; height:11px; border-radius:50%;
+  background:var(--orange); flex-shrink:0;
+  animation:blink 2s ease-in-out infinite;
+}
+.emu-lora-banner.connected .lora-banner-dot {
+  background:var(--green);
+  box-shadow:0 0 0 3px var(--green-g), 0 0 10px var(--green);
+  animation:none;
+}
+.emu-body.locked .emu-card { opacity:0.35; pointer-events:none; user-select:none; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="emu-header">
+  <div class="emu-header-left">
+    <span class="emu-title">ART Hardware Emulator</span>
+    <span class="emu-dev-badge">DEV TOOL</span>
+  </div>
+  <div class="emu-header-right">
+    <div class="conn-pill">
+      <div class="conn-dot" id="conn-dot"></div>
+      <span id="conn-label">Waiting for app…</span>
+    </div>
+    <a class="btn-open-app" href="index.html" target="_blank">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open App
+    </a>
+  </div>
+</div>
+
+<div class="emu-body locked">
+
+  <!-- LoRa Handshake Status Banner -->
+  <div class="emu-lora-banner" id="emu-lora-banner">
+    <div class="lora-banner-dot" id="lora-banner-dot"></div>
+    <span id="lora-banner-txt">Waiting for App connection...</span>
+  </div>
+
+  <!-- 1. Docking Station -->
+  <div class="emu-card">
+    <div class="emu-sec-label">8-Slot Docking Station</div>
+    <div class="slot-grid" id="slot-grid"></div>
+  </div>
+
+  <!-- 2. Ring Reader -->
+  <div class="emu-card">
+    <div class="emu-sec-label">Ring Reader Simulation</div>
+    <div class="reader-row">
+      <select class="emu-select" id="reader-select">
+        <option value="">— Select inserted ring —</option>
+      </select>
+      <button class="hw-btn hw-btn-teal" id="btn-place-ring">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+        Simulate Ring Placement
+      </button>
+    </div>
+    <p class="hint-txt">Fires RING_READ_READY → app completes the ring-reader animation with the selected Ring ID.</p>
+  </div>
+
+  <!-- 3. Hardware Actions -->
+  <div class="emu-card">
+    <div class="emu-sec-label">Hardware Action Responses</div>
+    <div class="hw-row">
+      <button class="hw-btn hw-btn-green" id="btn-alt-reset">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+        Simulate Altitude Reset Success
+      </button>
+      <button class="hw-btn hw-btn-teal" id="btn-prog-done">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Simulate Programming Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. Race Telemetry -->
+  <div class="emu-card">
+    <div class="emu-sec-label">Race Data Injection (Manual Telemetry)</div>
+    <div class="race-top">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="race-toggle start" id="btn-race">
+          <svg id="race-play" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg id="race-stop" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <span id="race-btn-txt">Start Race</span>
+        </button>
+        <span class="race-badge" id="race-badge">Idle</span>
+      </div>
+      <p style="font-size:.7rem;color:var(--muted)">Drag sliders or check Auto to enable autonomous drift. All altitudes encoded as Float32 LE.</p>
+    </div>
+    <div class="pigeon-rows" id="pigeon-rows"></div>
+  </div>
+
+  <!-- 5. Event Log -->
+  <div class="emu-card">
+    <div class="emu-sec-label">Event Log</div>
+    <div class="emu-log" id="emu-log">
+      <div class="log-e warn">Emulator ready — open the main app in a separate tab.</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/emulator.js"></script>
+</body>
+</html>

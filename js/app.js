@@ -7,32 +7,27 @@ const T = {
     navTracking:'Praćenje visine', navDevice:'Povezivanje uređaja',
     navRings:'Programiranje prstenova', navResults:'Rezultati simulacije',
     // ── Tracking page ──
-    lblHeight:'Trenutna visina', lblMeters:'Metri (m)', lblStats:'Statistike (sesija)',
+    lblHeight:'Najviša visina', lblMeters:'Metri (m)', lblStats:'Statistike (sesija)',
     lblMax:'Maksimum', lblMin:'Minimum', lblConn:'Konekcija',
-    lblBLECfg:'BLE konfiguracija', lblDataFmt:'Format podataka',
     lblGraphTitle:'Visina kroz vreme — poslednje 2 minuta', lblAltitude:'Visina (m)',
-    btnConnect:'Poveži BLE uređaj', btnSearching:'🔍 Tražim uređaje...',
-    btnDisconnect:'Isključi uređaj', btnSimStart:'Simulacija (demo)',
+    btnConnect:'Poveži LoRa mrežu', btnSearching:'🔍 Tražim stanicu...',
+    btnDisconnect:'Isključi LoRa mrežu', btnSimStart:'Simulacija (demo)',
     btnSimStop:'Zaustavi simulaciju', btnReset:'Resetuj podatke',
-    noBleHtml:'⚠️ Web Bluetooth nije podržan.<br>Koristite <strong>Chrome</strong> ili <strong>Edge</strong>.',
     toastConnecting:'Konekcija u toku…', toastConnected:n=>`Povezano na ${n}`,
-    toastDisconn:'Uređaj odpojen', toastSimStart:'Simulacija pokrenuta',
-    toastSimBusy:'Najpre isključi BLE uređaj', toastReset:'Podaci obrisani',
+    toastDisconn:'Mreža odpojena', toastSimStart:'Simulacija pokrenuta',
+    toastSimBusy:'Najpre isključi LoRa mrežu', toastReset:'Podaci obrisani',
     toastResultSaved:'Rezultat sačuvan na strani Rezultati',
     toastRingSaved:'Prsten uspešno programiran',
     toastFillAll:'Popunite sva polja', toastReadFirst:'Najpre očitajte prsten',
-    canvasEmpty:'Pritisnite "Poveži BLE uređaj" ili pokrenite simulaciju',
+    canvasEmpty:'Pritisnite "Poveži LoRa mrežu" ili pokrenite simulaciju',
     graphNow:'Sad', graphPoints:n=>`${n} tačaka`,
-    footerReq:'Zahteva Chrome / Edge + HTTPS',
     statusOff:'Nije povezano', statusSim:'Simulacija aktivna',
     statusCon:n=>`Povezano — ${n}`,
-    fmtFloat32:'Float32 LE (meteri)', fmtUint16cm:'UInt16 LE (centimetri)',
-    fmtUint16m:'UInt16 LE (meteri)', fmtText:'Tekst / ASCII broj',
-    fmtJSON:'JSON  {"h": 123.4}',
     // ── Device page ──
-    p2Title:'Povezivanje BLE uređaja', p2DevInfo:'Informacije o uređaju',
+    p2Title:'LoRa mrežna stanica', p2DevInfo:'Informacije o uređaju',
     p2DevName:'Naziv uređaja', p2Signal:'Jačina signala', p2Battery:'Baterija',
     p2StatusOff:'Uređaj nije povezan', p2StatusOn:n=>`Povezano: ${n}`,
+    loraHandshakePending:'LoRa mreža nije inicijalizovana', loraHandshakeConnected:'LoRa mreža — AKTIVNA',
     // ── Rings page ──
     p3ReadSection:'Očitavanje prstena', p3ReadBtn:'Očitaj prsten',
     p3Reading:'Očitavanje...', p3FormSection:'Podaci vlasnika',
@@ -40,6 +35,10 @@ const T = {
     p3SaveBtn:'Sačuvaj na prsten', p3ListSection:'Programirani prstenovi (sesija)',
     p3ColID:'ID prstena', p3ColName:'Ime i prezime', p3ColClub:'Klub', p3ColTime:'Vreme',
     p3EmptyRow:'Nema programiranih prstenova.',
+    p3SessionSection:'Detektovani prstenovi — sesija',
+    p3SessionEmpty:'Nema prstenova detektovanih u ovoj sesiji.',
+    p3SessionColID:'ID prstena', p3SessionColSlot:'Slot', p3SessionColTime:'Vreme',
+    p3SessionHint:'Kliknite na red da izaberete prsten za programiranje →',
     // ── Results page ──
     p4Title:'Rezultati simulacije', p4Add:'Dodaj rezultat',
     p4Export:'Izvezi u CSV', p4DeleteAll:'Obriši sve',
@@ -91,32 +90,27 @@ const T = {
     navTracking:'Altitude Tracking', navDevice:'Device Connection',
     navRings:'Ring Programming', navResults:'Simulation Results',
     // ── Tracking page ──
-    lblHeight:'Current altitude', lblMeters:'Meters (m)', lblStats:'Statistics (session)',
+    lblHeight:'Highest altitude', lblMeters:'Meters (m)', lblStats:'Statistics (session)',
     lblMax:'Maximum', lblMin:'Minimum', lblConn:'Connection',
-    lblBLECfg:'BLE configuration', lblDataFmt:'Data format',
     lblGraphTitle:'Altitude over time — last 2 minutes', lblAltitude:'Altitude (m)',
-    btnConnect:'Connect BLE device', btnSearching:'🔍 Searching for devices...',
-    btnDisconnect:'Disconnect device', btnSimStart:'Simulation (demo)',
+    btnConnect:'Connect LoRa Gateway', btnSearching:'🔍 Searching for gateway...',
+    btnDisconnect:'Disconnect gateway', btnSimStart:'Simulation (demo)',
     btnSimStop:'Stop simulation', btnReset:'Reset data',
-    noBleHtml:'⚠️ Web Bluetooth not supported.<br>Use <strong>Chrome</strong> or <strong>Edge</strong>.',
     toastConnecting:'Connecting…', toastConnected:n=>`Connected to ${n}`,
-    toastDisconn:'Device disconnected', toastSimStart:'Simulation started',
-    toastSimBusy:'Disconnect BLE device first', toastReset:'Data cleared',
+    toastDisconn:'Gateway disconnected', toastSimStart:'Simulation started',
+    toastSimBusy:'Disconnect LoRa gateway first', toastReset:'Data cleared',
     toastResultSaved:'Result saved to Results page',
     toastRingSaved:'Ring programmed successfully',
     toastFillAll:'Please fill all fields', toastReadFirst:'Read a ring first',
-    canvasEmpty:'Click "Connect BLE device" or start the simulation',
+    canvasEmpty:'Click "Connect LoRa Gateway" or start the simulation',
     graphNow:'Now', graphPoints:n=>`${n} points`,
-    footerReq:'Requires Chrome / Edge + HTTPS',
     statusOff:'Not connected', statusSim:'Simulation active',
     statusCon:n=>`Connected — ${n}`,
-    fmtFloat32:'Float32 LE (meters)', fmtUint16cm:'UInt16 LE (centimeters)',
-    fmtUint16m:'UInt16 LE (meters)', fmtText:'Text / ASCII number',
-    fmtJSON:'JSON  {"h": 123.4}',
     // ── Device page ──
-    p2Title:'BLE Device Connection', p2DevInfo:'Device information',
+    p2Title:'LoRa Gateway Connection', p2DevInfo:'Device information',
     p2DevName:'Device name', p2Signal:'Signal strength', p2Battery:'Battery',
     p2StatusOff:'Device not connected', p2StatusOn:n=>`Connected: ${n}`,
+    loraHandshakePending:'LoRa network not initialized', loraHandshakeConnected:'LoRa network — ACTIVE',
     // ── Rings page ──
     p3ReadSection:'Ring reading', p3ReadBtn:'Read ring',
     p3Reading:'Reading...', p3FormSection:'Owner data',
@@ -124,6 +118,10 @@ const T = {
     p3SaveBtn:'Save to ring', p3ListSection:'Programmed rings (session)',
     p3ColID:'Ring ID', p3ColName:'Full name', p3ColClub:'Club', p3ColTime:'Time',
     p3EmptyRow:'No programmed rings.',
+    p3SessionSection:'Detected rings — session',
+    p3SessionEmpty:'No rings detected in this session.',
+    p3SessionColID:'Ring ID', p3SessionColSlot:'Slot', p3SessionColTime:'Time',
+    p3SessionHint:'Click a row to select a ring for programming →',
     // ── Results page ──
     p4Title:'Simulation results', p4Add:'Add result',
     p4Export:'Export CSV', p4DeleteAll:'Delete all',
@@ -182,9 +180,10 @@ const PIGEON_COLORS = ['#26C6DA','#42A5F5','#4ADE80','#FB923C','#E879F9','#FBBF2
 const PIGEON_ZONES  = [[80,420],[220,580],[360,730],[500,870],[640,1100]];
 let pigeons = Array.from({length:5},(_,i)=>{const mid=(PIGEON_ZONES[i][0]+PIGEON_ZONES[i][1])/2;return{pts:[],h:mid,vel:0,target:mid};});
 let sMax = null, sMin = null;
-let ble  = { dev:null, chr:null, connected:false };
+let lora = { dev:null, timer:null, connected:false };
 let sim  = { active:false, timer:null, startTime:0 };
-let rings   = [];
+let rings        = [];
+let sessionRings = []; // rings detected live from the emulator dock this session
 let results = [];
 let sortState = { col: null, dir: 1 };
 let currentRingId = null;
@@ -278,10 +277,7 @@ function applyLang() {
     const v = T[lang][el.dataset.i18nPh];
     if (typeof v === 'string') el.placeholder = v;
   });
-  [$('no-ble-warn'), $('p2-no-ble')].forEach(el => {
-    if (el && el.style.display !== 'none') el.innerHTML = T[lang].noBleHtml;
-  });
-  if (!ble.connected && !sim.active) {
+  if (!lora.connected && !sim.active) {
     statusTxt.textContent = T[lang].statusOff;
     $('p2-status-txt').textContent = T[lang].p2StatusOff;
   } else if (sim.active) {
@@ -297,6 +293,8 @@ function applyLang() {
     const badge = $('user-role-badge');
     badge.textContent = T[lang][`role${user.role.charAt(0).toUpperCase()+user.role.slice(1)}`] || user.role;
   }
+  updateLoraHandshakeUI(loraHandshakeActive);
+  renderSessionTable();
   renderRingsTable();
   renderResultsTable();
 }
@@ -312,10 +310,10 @@ function applyTheme() {
 $('btn-theme').addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); });
 $('btn-lang').addEventListener('click',  () => { lang  = lang  === 'sr'   ? 'en'    : 'sr';   applyLang(); });
 
-// ─── BLE (shared) ─────────────────────────────────────────────────────────────
-function syncBleUI() {
-  const on = ble.connected;
-  const name = ble.dev?.name || 'BLE';
+// ─── LoRa Gateway (shared) ────────────────────────────────────────────────────
+function syncLoraUI() {
+  const on = lora.connected;
+  const name = lora.dev?.name || 'LoRa';
   [dot, dot2].forEach(d => { if (d) d.className = 'dot' + (on ? ' on' : ''); });
   statusTxt.textContent = on ? T[lang].statusCon(name) : (sim.active ? T[lang].statusSim : T[lang].statusOff);
   $('p2-status-txt').textContent = on ? T[lang].p2StatusOn(name) : T[lang].p2StatusOff;
@@ -323,7 +321,7 @@ function syncBleUI() {
   btnDis.style.display   = on ? 'flex' : 'none';
   $('p2-btn-connect').style.display    = on ? 'none' : 'flex';
   $('p2-btn-disconnect').style.display = on ? 'flex' : 'none';
-  $('dev-name').textContent    = on ? (ble.dev?.name || T[lang].unknown) : '—';
+  $('dev-name').textContent    = on ? (lora.dev?.name || T[lang].unknown) : '—';
   $('dev-battery').textContent = on ? Math.floor(55 + Math.random()*35) + ' %' : '—';
   $('dev-signal-txt').textContent = on ? T[lang].signalGood : '—';
   const bars = document.querySelectorAll('#dev-signal .bar');
@@ -331,34 +329,62 @@ function syncBleUI() {
   bars.forEach((b, i) => b.classList.toggle('on', i < barsOn));
 }
 
-async function doConnect() {
-  if (sim.active) stopSim();
-  try {
-    btnCon.disabled = true;
-    btnCon.querySelector('span').textContent = T[lang].btnSearching;
-    $('p2-btn-connect').querySelector('span').textContent = T[lang].btnSearching;
-    $('p2-btn-connect').disabled = true;
-    const svcUUID = $('cfg-svc').value.trim();
-    const chrUUID = $('cfg-char').value.trim();
-    ble.dev = await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:[svcUUID] });
-    ble.dev.addEventListener('gattserverdisconnected', doDisconnect);
-    showToast(T[lang].toastConnecting, 'info');
-    const srv = await ble.dev.gatt.connect();
-    const svc = await srv.getPrimaryService(svcUUID);
-    ble.chr   = await svc.getCharacteristic(chrUUID);
-    await ble.chr.startNotifications();
-    ble.chr.addEventListener('characteristicvaluechanged', onBLEData);
-    ble.connected = true;
-    syncBleUI();
-    showToast(T[lang].toastConnected(ble.dev.name || 'BLE'), 'ok');
-  } catch(e) {
-    showToast(e.message || T[lang].toastDisconn, 'err');
-    resetConBtns();
+function updateLoraHandshakeUI(connected) {
+  loraHandshakeActive = connected;
+  const row   = $('lora-handshake-row');
+  const dotEl = $('dot-lora');
+  const txtEl = $('lora-handshake-txt');
+  if (!row || !dotEl || !txtEl) return;
+  dotEl.className = 'dot' + (connected ? ' on' : '');
+  txtEl.textContent = connected ? T[lang].loraHandshakeConnected : T[lang].loraHandshakePending;
+  row.classList.toggle('active', connected);
+}
+
+function initiateLoraHandshake() {
+  if (appSocket && emuSocketConn) {
+    appSocket.emit('initiate_lora_connection');
+  } else {
+    emulatorCh.postMessage({ type: 'LORA_CONNECTED' });
+    updateLoraHandshakeUI(true);
   }
 }
+
+function terminateLoraHandshake() {
+  if (appSocket && emuSocketConn) {
+    appSocket.emit('terminate_lora_connection');
+    // UI updated when server echoes lora_status_update { connected: false }
+  } else {
+    emulatorCh.postMessage({ type: 'LORA_DISCONNECTED' });
+    updateLoraHandshakeUI(false);
+  }
+}
+
+async function doConnect() {
+  if (sim.active) stopSim();
+  btnCon.disabled = true;
+  btnCon.querySelector('span').textContent = T[lang].btnSearching;
+  $('p2-btn-connect').querySelector('span').textContent = T[lang].btnSearching;
+  $('p2-btn-connect').disabled = true;
+  showToast(T[lang].toastConnecting, 'info');
+  // Simulate LoRa gateway handshake
+  await new Promise(r => setTimeout(r, 1400 + Math.random() * 600));
+  const gwId = 'ART-GW-' + Math.floor(1000 + Math.random() * 9000);
+  lora.dev = { name: gwId };
+  lora.connected = true;
+  lora.timer = setInterval(onLoraData, 500);
+  syncLoraUI();
+  showToast(T[lang].toastConnected(gwId), 'ok');
+}
 function doDisconnect() {
-  ble.connected = false; ble.chr = null;
-  syncBleUI(); resetConBtns();
+  isRaceActive = false;
+  emuBcActive = false;
+  clearLatestAltitudes();
+  clearInterval(lora.timer); lora.timer = null;
+  lora.connected = false; lora.dev = null;
+  sMax = sMin = null;
+  pigeons.forEach((pig, i) => { pig.pts = []; pig.h = 220 + i * 70; pig.vel = 0; pig.target = 300 + i * 55; });
+  hVal.textContent = '—'; maxVal.textContent = '—'; minVal.textContent = '—';
+  syncLoraUI(); resetConBtns();
   showToast(T[lang].toastDisconn, 'err');
 }
 function resetConBtns() {
@@ -369,34 +395,27 @@ function resetConBtns() {
 }
 
 btnCon.addEventListener('click', doConnect);
-btnDis.addEventListener('click', () => { if (ble.dev?.gatt.connected) ble.dev.gatt.disconnect(); else doDisconnect(); });
-$('p2-btn-connect').addEventListener('click', doConnect);
-$('p2-btn-disconnect').addEventListener('click', () => { if (ble.dev?.gatt.connected) ble.dev.gatt.disconnect(); else doDisconnect(); });
+btnDis.addEventListener('click', () => { doDisconnect(); terminateLoraHandshake(); });
+$('p2-btn-connect').addEventListener('click', () => { doConnect(); initiateLoraHandshake(); });
+$('p2-btn-disconnect').addEventListener('click', () => { doDisconnect(); terminateLoraHandshake(); });
 
-function onBLEData(ev) {
-  const dv=ev.target.value, fmt=$('cfg-fmt').value; let h=null;
-  try {
-    switch(fmt) {
-      case 'float32':   h=dv.getFloat32(0,true); break;
-      case 'uint16_cm': h=dv.getUint16(0,true)/100; break;
-      case 'uint16_m':  h=dv.getUint16(0,true); break;
-      case 'text': { const m=new TextDecoder().decode(dv).match(/-?[\d.]+/); if(m) h=parseFloat(m[0]); break; }
-      case 'json': { const o=JSON.parse(new TextDecoder().decode(dv)); h=o.h??o.height??o.altitude??null; break; }
-    }
-  } catch {}
-  if(h!==null && isFinite(h) && h>=0) pushPoint(h);
-}
-
-// ─── BLE check ────────────────────────────────────────────────────────────────
-if (!navigator.bluetooth) {
-  [$('no-ble-warn'), $('p2-no-ble')].forEach(el => { el.style.display='block'; el.innerHTML=T[lang].noBleHtml; });
-  btnCon.disabled = true;
-  $('p2-btn-connect').disabled = true;
+// Simulate incoming LoRa telemetry — altitude encoded as Float32 LE (meters)
+function onLoraData() {
+  if (!isRaceActive) return; // chart stays static until race explicitly starts
+  if (emuSocketConn || emuBcActive) return; // emulator is sending real data; skip local noise
+  const buf = new ArrayBuffer(4);
+  const view = new DataView(buf);
+  const pig = pigeons[0];
+  const noise = (Math.random() - 0.5) * 40;
+  const alt = Math.max(0, Math.min(1200, (pig.h || 120) + noise));
+  view.setFloat32(0, alt, true);       // encode as Float32 LE
+  const h = view.getFloat32(0, true);  // parse back as Float32 LE (meters)
+  if (isFinite(h) && h >= 0) pushPoint(h);
 }
 
 // ─── Simulation ───────────────────────────────────────────────────────────────
 btnSim.addEventListener('click', () => {
-  if (ble.connected) { showToast(T[lang].toastSimBusy,'err'); return; }
+  if (lora.connected) { showToast(T[lang].toastSimBusy,'err'); return; }
   sim.active ? stopSim() : startSim();
 });
 function startSim() {
@@ -460,7 +479,7 @@ function stopSim() {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 function pushPoint(h) {
-  // BLE mode: single source feeds pigeon 0 only
+  // LoRa mode: single ring feeds pigeon 0 only
   const now=Date.now(), pig=pigeons[0];
   pig.pts.push({t:now,h});
   const cut=now-WINDOW_MS; while(pig.pts.length&&pig.pts[0].t<cut) pig.pts.shift();
@@ -472,6 +491,7 @@ function pushPoint(h) {
 }
 btnReset.addEventListener('click', () => {
   sMax=sMin=null;
+  clearLatestAltitudes();
   pigeons.forEach((pig,i)=>{pig.pts=[]; pig.h=220+i*70; pig.vel=0; pig.target=300+i*55;});
   hVal.textContent='—'; maxVal.textContent='—'; minVal.textContent='—';
   showToast(T[lang].toastReset,'info');
@@ -595,6 +615,7 @@ function renderLegend() {
 
 // ─── Page 3: Rings ────────────────────────────────────────────────────────────
 let readingRing = false;
+let readingRingTimer = null; // kept so the emulator can cancel an in-progress read
 $('btn-read-ring').addEventListener('click', () => {
   if (readingRing) return;
   readingRing = true;
@@ -603,7 +624,8 @@ $('btn-read-ring').addEventListener('click', () => {
   $('ring-id-display').textContent = T[lang].p3Reading;
   const anim = $('ring-anim');
   anim.classList.add('reading');
-  setTimeout(() => {
+  readingRingTimer = setTimeout(() => {
+    readingRingTimer = null;
     anim.classList.remove('reading');
     currentRingId = 'ART-' + Array.from({length:6},()=>'0123456789ABCDEF'[Math.floor(Math.random()*16)]).join('');
     $('ring-id-display').textContent = currentRingId;
@@ -633,6 +655,68 @@ function renderRingsTable() {
   rings.forEach(r => {
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="badge badge-ring">${r.ringId}</span></td><td>${r.firstName} ${r.lastName}</td><td>${r.club}</td><td>${fmtTime(r.time)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── Session Ring Detection ───────────────────────────────────────────────────
+function addSessionRing(ringId, slot) {
+  sessionRings.push({ ringId, slot, time: new Date() });
+  renderSessionTable();
+}
+
+function selectSessionRing(ringId) {
+  // Cancel any in-progress manual read
+  if (readingRing) {
+    clearTimeout(readingRingTimer);
+    readingRingTimer = null;
+    readingRing = false;
+    $('ring-anim').classList.remove('reading');
+  }
+  currentRingId = ringId;
+  $('ring-id-display').textContent = ringId;
+  $('btn-save-ring').disabled = false;
+  // Brief flash on the ID display to confirm selection
+  const box = $('ring-id-display');
+  box.classList.remove('highlight');
+  void box.offsetWidth; // force reflow to restart animation
+  box.classList.add('highlight');
+  renderSessionTable(); // refresh selected state
+}
+
+function renderSessionTable() {
+  const tbody = $('session-rings-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!sessionRings.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">${T[lang].p3SessionEmpty}</td></tr>`;
+    return;
+  }
+  [...sessionRings].reverse().forEach((r, displayIdx) => {
+    const origIdx = sessionRings.length - 1 - displayIdx;
+    const isSelected = currentRingId === r.ringId;
+    const tr = document.createElement('tr');
+    tr.className = 'session-ring-row' + (isSelected ? ' selected' : '');
+    if (displayIdx === 0) tr.classList.add('newest');
+    tr.innerHTML = `
+      <td><span class="badge badge-ring">${r.ringId}</span></td>
+      <td>Slot ${r.slot + 1}</td>
+      <td>${fmtTime(r.time)}</td>
+      <td><button class="row-del session-del-btn" data-idx="${origIdx}" title="Obriši / Delete">✕</button></td>`;
+    tr.addEventListener('click', e => {
+      if (e.target.closest('.session-del-btn')) return;
+      selectSessionRing(r.ringId);
+    });
+    tr.querySelector('.session-del-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      sessionRings.splice(origIdx, 1);
+      if (currentRingId === r.ringId) {
+        currentRingId = null;
+        $('ring-id-display').textContent = '— — —';
+        $('btn-save-ring').disabled = true;
+      }
+      renderSessionTable();
+    });
     tbody.appendChild(tr);
   });
 }
@@ -879,7 +963,8 @@ function drawDetailChart(canvas,racePigeons){
 
 function renderDetailPigeonTable(pigeons){
   const tbody=$('detail-tbody'); tbody.innerHTML='';
-  pigeons.forEach(pig=>{
+  pigeons.forEach((pig,idx)=>{
+    const color=PIGEON_COLORS[idx%PIGEON_COLORS.length];
     const valid=isValidFlight(pig);
     const badge=valid
       ?`<span class="badge-valid">${T[lang].detValidBadge}</span>`
@@ -889,8 +974,9 @@ function renderDetailPigeonTable(pigeons){
     const ab=pig.timeAbove800||0;
     const ah=Math.floor(ab/3600),am=Math.floor((ab%3600)/60),as_=ab%60;
     const abStr=`${pad(ah)}:${pad(am)}:${pad(as_)}`;
+    const dot=`<span class="pig-color-dot" style="background:${color};box-shadow:0 0 4px ${color}80"></span>`;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${pig.name}</td><td>${dur}</td><td>${abStr}</td><td>${pig.maxH}</td><td>${badge}</td>`;
+    tr.innerHTML=`<td>${dot}${pig.name}</td><td>${dur}</td><td>${abStr}</td><td>${pig.maxH}</td><td>${badge}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1056,6 +1142,7 @@ function showToast(msg,type='info'){
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+function clearLatestAltitudes(){ for(const k in latestAltitudes) delete latestAltitudes[k]; }
 function hexA(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
 function msToDuration(ms){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;return `${pad(h)}:${pad(m)}:${pad(s)}`;}
 function pad(n){return String(n).padStart(2,'0');}
@@ -1133,11 +1220,190 @@ function initRandomResults() {
   }
 }
 
+// ─── Hardware Emulator Channel ────────────────────────────────────────────────
+// Two transports run in parallel; only one is active at a time:
+//   • Socket.io  — when backend/server.js is running (cross-device capable)
+//   • BroadcastChannel — same-browser fallback when no server is present
+// emuSocketConn gates the BC handler so events are never processed twice.
+
+let emuSocketConn = false;
+let appSocket = null;
+let loraHandshakeActive = false;
+let isRaceActive = false; // true only after emulator "Start Race" — gates all chart updates
+let emuBcActive = false;  // true when emulator sends data via BroadcastChannel (not socket)
+const latestAltitudes = {}; // pigeonIdx → last received altitude; only pigeons with real data
+
+const emulatorCh = new BroadcastChannel('art-emulator');
+emulatorCh.onmessage = ({ data }) => {
+  if (emuSocketConn) return; // Socket.io is active; skip BC to prevent duplicates
+  switch (data.type) {
+    case 'PING':
+      emulatorCh.postMessage({ type: 'PONG' });
+      break;
+    case 'RING_INSERT':
+      showToast(`Ring ${data.ringId} detected (Slot ${data.slot + 1})`, 'ok');
+      addSessionRing(data.ringId, data.slot);
+      break;
+    case 'RING_REMOVE':
+      showToast(`Slot ${data.slot + 1} cleared`, 'info');
+      break;
+    case 'RING_READ_READY':
+      _emulatorRingRead(data.ringId);
+      break;
+    case 'RACE_ALTITUDE':
+      _emulatorInjectAlt(data.pigeonIdx, data.altitude);
+      break;
+    case 'RACE_START':
+      isRaceActive = true;
+      emuBcActive = true;
+      if (!lora.connected && !sim.active) { dot.className='dot on'; statusTxt.textContent='Emulator active'; }
+      break;
+    case 'RACE_STOP':
+      isRaceActive = false;
+      emuBcActive = false;
+      clearLatestAltitudes();
+      if (!lora.connected && !sim.active) { dot.className='dot'; statusTxt.textContent=T[lang].statusOff; }
+      break;
+    case 'HW_ALT_RESET':
+      sMax=sMin=null;
+      clearLatestAltitudes();
+      pigeons.forEach((pig,i)=>{ pig.pts=[]; pig.h=220+i*70; pig.vel=0; pig.target=300+i*55; });
+      hVal.textContent='—'; maxVal.textContent='—'; minVal.textContent='—';
+      showToast('Altitude reset confirmed','ok');
+      break;
+    case 'HW_PROGRAM_COMPLETE':
+      if (currentRingId) showToast('Programming sequence complete','ok');
+      break;
+    case 'LORA_CONNECTED':
+      updateLoraHandshakeUI(true);
+      break;
+    case 'LORA_DISCONNECTED':
+      updateLoraHandshakeUI(false);
+      break;
+  }
+};
+
+// Called when emulator fires RING_READ_READY — navigates to rings page and
+// completes the read animation with the emulator-supplied Ring ID.
+function _emulatorRingRead(ringId) {
+  if (!Auth.hasAccess('rings')) return;
+  if (readingRing) {
+    clearTimeout(readingRingTimer);
+    readingRingTimer = null;
+    readingRing = false;
+    $('ring-anim').classList.remove('reading');
+  }
+  if (currentPage !== 'rings') showPage('rings');
+  readingRing = true;
+  currentRingId = null;
+  $('btn-save-ring').disabled = true;
+  $('ring-id-display').textContent = T[lang].p3Reading;
+  $('ring-anim').classList.add('reading');
+  readingRingTimer = setTimeout(() => {
+    readingRingTimer = null;
+    $('ring-anim').classList.remove('reading');
+    currentRingId = ringId;
+    $('ring-id-display').textContent = ringId;
+    $('btn-save-ring').disabled = false;
+    readingRing = false;
+  }, 600);
+}
+
+// Altitude injected by the emulator — encoded/decoded as Float32 LE (meters)
+// to match the physical ring wire format.
+function _emulatorInjectAlt(pigeonIdx, altitude) {
+  if (!isRaceActive) return; // only accept data while emulator race is running
+  if (pigeonIdx < 0 || pigeonIdx >= pigeons.length) return;
+  const buf  = new ArrayBuffer(4);
+  const view = new DataView(buf);
+  view.setFloat32(0, altitude, true);
+  const h = view.getFloat32(0, true);
+  if (!isFinite(h) || h < 0) return;
+  const now = Date.now(), pig = pigeons[pigeonIdx];
+  pig.h = h;
+  pig.pts.push({ t: now, h });
+  const cut = now - WINDOW_MS;
+  while (pig.pts.length && pig.pts[0].t < cut) pig.pts.shift();
+  if (sMax === null || h > sMax) sMax = h;
+  if (sMin === null || h < sMin) sMin = h;
+  // Track only pigeons that have actually sent data, then show the highest
+  latestAltitudes[pigeonIdx] = h;
+  const vals = Object.values(latestAltitudes);
+  hVal.textContent = Math.max(...vals).toFixed(1);
+  maxVal.textContent = sMax.toFixed(1) + ' m';
+  minVal.textContent = sMin.toFixed(1) + ' m';
+}
+
+// Socket.io transport — dynamically loaded from the backend server.
+// Silently skipped (emuSocketConn stays false) when server is not running,
+// so the BroadcastChannel fallback above continues to handle all events.
+(function initEmulatorSocket() {
+  const s   = document.createElement('script');
+  s.src     = 'https://aero-ring-backend.onrender.com/socket.io/socket.io.js';
+  s.onload  = () => {
+    appSocket = io('https://aero-ring-backend.onrender.com', {
+      transports:           ['websocket'],
+      reconnectionAttempts: 5,
+      reconnectionDelay:    2000,
+    });
+
+    appSocket.on('connect', () => {
+      emuSocketConn = true;
+      appSocket.emit('join', 'main-app');
+    });
+    appSocket.on('disconnect', () => { emuSocketConn = false; });
+
+    // ── Docking / ring reader ──────────────────────────────────────────────
+    appSocket.on('ring_inserted', ({ slot, ringId }) => {
+      showToast(`Ring ${ringId} detected (Slot ${slot + 1})`, 'ok');
+      addSessionRing(ringId, slot);
+    });
+    appSocket.on('ring_removed',    ({ slot })         => showToast(`Slot ${slot + 1} cleared`, 'info'));
+    appSocket.on('ring_read_ready', ({ ringId })        => _emulatorRingRead(ringId));
+
+    // ── Hardware action responses ─────────────────────────────────────────
+    appSocket.on('altitude_reset_success', () => {
+      sMax=sMin=null;
+      clearLatestAltitudes();
+      pigeons.forEach((pig,i)=>{ pig.pts=[]; pig.h=220+i*70; pig.vel=0; pig.target=300+i*55; });
+      hVal.textContent='—'; maxVal.textContent='—'; minVal.textContent='—';
+      showToast('Altitude reset confirmed','ok');
+    });
+    appSocket.on('programming_complete', () => {
+      if (currentRingId) showToast('Programming sequence complete','ok');
+    });
+
+    // ── Race lifecycle ────────────────────────────────────────────────────
+    appSocket.on('race_started', () => {
+      isRaceActive = true;
+      if (!lora.connected && !sim.active) { dot.className='dot on'; statusTxt.textContent='Emulator active'; }
+    });
+    appSocket.on('race_stopped', () => {
+      isRaceActive = false;
+      clearLatestAltitudes();
+      if (!lora.connected && !sim.active) { dot.className='dot'; statusTxt.textContent=T[lang].statusOff; }
+    });
+    // Each telemetry_update carries an array so one socket message can carry
+    // a full multi-pigeon snapshot if needed.
+    appSocket.on('telemetry_update', ({ pigeons: updates }) => {
+      (updates || []).forEach(({ pigeonIdx, altitude }) => _emulatorInjectAlt(pigeonIdx, altitude));
+    });
+
+    // ── LoRa handshake confirmation ───────────────────────────────────────
+    appSocket.on('lora_status_update', ({ connected }) => {
+      updateLoraHandshakeUI(connected);
+    });
+  };
+  s.onerror = () => {}; // Server not running — silently use BroadcastChannel
+  document.head.appendChild(s);
+})();
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 applyTheme();
 applyAuthUI();     // show login overlay / restrict tabs before any render
 applyLang();
-syncBleUI();
+syncLoraUI();
+renderSessionTable();
 renderRingsTable();
 initRandomResults();
 renderResultsTable();

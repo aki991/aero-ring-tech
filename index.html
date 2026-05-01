@@ -87,7 +87,6 @@
         <div class="controls-section">
           <div class="lbl" data-i18n="lblConn"></div>
           <div class="controls">
-            <div class="no-ble-warn" id="no-ble-warn"></div>
             <button class="btn-connect" id="btn-connect">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 6L4 10l4 4M16 6l4 4-4 4M14 4l-4 16"/></svg>
               <span data-i18n="btnConnect"></span>
@@ -102,23 +101,6 @@
               <span id="sim-btn-txt" data-i18n="btnSimStart"></span>
             </button>
             <button class="btn-reset" id="btn-reset" data-i18n="btnReset"></button>
-          </div>
-        </div>
-        <div class="cfg-section">
-          <div class="lbl" data-i18n="lblBLECfg"></div>
-          <div class="cfg-block">
-            <div class="cfg-field"><label>Service UUID</label><input id="cfg-svc" value="0000fff0-0000-1000-8000-00805f9b34fb" spellcheck="false"></div>
-            <div class="cfg-field"><label>Characteristic UUID</label><input id="cfg-char" value="0000fff1-0000-1000-8000-00805f9b34fb" spellcheck="false"></div>
-            <div class="cfg-field">
-              <label data-i18n="lblDataFmt"></label>
-              <select id="cfg-fmt">
-                <option value="float32"   data-i18n="fmtFloat32"></option>
-                <option value="uint16_cm" data-i18n="fmtUint16cm"></option>
-                <option value="uint16_m"  data-i18n="fmtUint16m"></option>
-                <option value="text"      data-i18n="fmtText"></option>
-                <option value="json"      data-i18n="fmtJSON"></option>
-              </select>
-            </div>
           </div>
         </div>
       </aside>
@@ -158,7 +140,10 @@
               <span data-i18n="btnDisconnect"></span>
             </button>
           </div>
-          <div class="no-ble-warn" id="p2-no-ble" style="width:100%;max-width:400px;text-align:center;"></div>
+          <div class="lora-handshake-row" id="lora-handshake-row">
+            <div class="dot" id="dot-lora"></div>
+            <span id="lora-handshake-txt"></span>
+          </div>
         </div>
         <div class="lbl" data-i18n="p2DevInfo"></div>
         <div class="info-grid">
@@ -209,8 +194,23 @@
           </button>
         </div>
       </div>
-      <!-- RIGHT: list -->
+      <!-- RIGHT: session + programmed list -->
       <div class="rings-right">
+        <div class="lbl" data-i18n="p3SessionSection"></div>
+        <div class="rings-table-wrap rings-session-wrap">
+          <table class="data-table" id="session-rings-table">
+            <thead>
+              <tr>
+                <th data-i18n="p3SessionColID"></th>
+                <th data-i18n="p3SessionColSlot"></th>
+                <th data-i18n="p3SessionColTime"></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="session-rings-tbody"></tbody>
+          </table>
+        </div>
+        <p class="session-hint" data-i18n="p3SessionHint"></p>
         <div class="lbl" data-i18n="p3ListSection"></div>
         <div class="rings-table-wrap">
           <table class="data-table" id="rings-table">
@@ -289,8 +289,8 @@
 <!-- ── FOOTER ── -->
 <footer>
   <span>Aero Ring Tech</span><span>·</span>
-  <span>Web Bluetooth API</span><span>·</span>
-  <span data-i18n="footerReq"></span>
+  <span>LoRa Long-Range Telemetry</span>
+  <a class="emu-launch-link" href="emulator.html" target="_blank" title="Open Hardware Emulator (dev)">⚙</a>
 </footer>
 
 <!-- ── MODAL: Add Result ── -->
