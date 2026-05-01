@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/emulator", "destination": "/emulator.html" }
+  ]
+}
