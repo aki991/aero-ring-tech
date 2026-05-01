@@ -4,8 +4,8 @@
 const T = {
   sr: {
     // ── Navigation ──
-    navTracking:'Praćenje visine', navDevice:'Povezivanje uređaja',
-    navRings:'Programiranje prstenova', navResults:'Rezultati simulacije',
+    navTracking:'Praćenje leta', navDevice:'Povezivanje uređaja',
+    navRings:'Programiranje prstenova', navResults:'Rezultati',
     // ── Tracking page ──
     lblHeight:'Najviša visina', lblMeters:'Metri (m)', lblStats:'Statistike (sesija)',
     lblMax:'Maksimum', lblMin:'Minimum', lblConn:'Konekcija',
@@ -41,7 +41,7 @@ const T = {
     p3SessionHint:'Kliknite na red da izaberete prsten za programiranje →',
     p3EditBtn:'Izmeni', p3UpdateBtn:'Sačuvaj izmene', p3UpdSuccess:'Prsten uspešno ažuriran',
     // ── Results page ──
-    p4Title:'Rezultati simulacije', p4Add:'Dodaj rezultat',
+    p4Title:'Rezultati', p4Add:'Dodaj rezultat',
     p4Export:'Izvezi u CSV', p4DeleteAll:'Obriši sve',
     p4ColNum:'#', p4ColName:'Ime i prezime', p4ColClub:'Klub',
     p4ColDuration:'Trajanje', p4ColMaxH:'Max visina (m)',
@@ -89,8 +89,8 @@ const T = {
   },
   en: {
     // ── Navigation ──
-    navTracking:'Altitude Tracking', navDevice:'Device Connection',
-    navRings:'Ring Programming', navResults:'Simulation Results',
+    navTracking:'Flight Tracking', navDevice:'Device Connection',
+    navRings:'Ring Programming', navResults:'Results',
     // ── Tracking page ──
     lblHeight:'Highest altitude', lblMeters:'Meters (m)', lblStats:'Statistics (session)',
     lblMax:'Maximum', lblMin:'Minimum', lblConn:'Connection',
@@ -126,7 +126,7 @@ const T = {
     p3SessionHint:'Click a row to select a ring for programming →',
     p3EditBtn:'Edit', p3UpdateBtn:'Save changes', p3UpdSuccess:'Ring updated successfully',
     // ── Results page ──
-    p4Title:'Simulation results', p4Add:'Add result',
+    p4Title:'Results', p4Add:'Add result',
     p4Export:'Export CSV', p4DeleteAll:'Delete all',
     p4ColNum:'#', p4ColName:'Full name', p4ColClub:'Club',
     p4ColDuration:'Duration', p4ColMaxH:'Max altitude (m)',
@@ -475,10 +475,17 @@ function stopSim() {
     const timeAbove800=fp.reduce((acc,alt)=>acc+(alt>800?30:0),0);
     const validFlight=sMax>800&&timeAbove800>totalSecs*0.5;
     const simPigeons=generateRacePigeons(totalSecs,sMax);
-    const lastRing=rings[rings.length-1];
+    const { authenticated, user } = Auth.getState();
+    const lastRing = rings[rings.length-1];
+    const resultName = authenticated
+      ? user.name
+      : (lastRing ? `${lastRing.firstName} ${lastRing.lastName}` : T[lang].unknown);
+    const resultClub = authenticated
+      ? (user.club || '—')
+      : (lastRing ? lastRing.club : '—');
     addResult({
-      name: lastRing?`${lastRing.firstName} ${lastRing.lastName}`:T[lang].unknown,
-      club: lastRing?lastRing.club:'—',
+      name: resultName,
+      club: resultClub,
       duration: msToDuration(dur), maxH:sMax, avgH,
       datetime: new Date(), flightPath:fp, totalSecs, validFlight, pigeons:simPigeons,
     });
@@ -910,7 +917,7 @@ function insertExpandedRow(r,tr,tbody){
   </div></td>`;
   tr.after(expTr);
   const canvas=expTr.querySelector('.mini-chart');
-  requestAnimationFrame(()=>drawMiniChart(canvas,r.flightPath));
+  requestAnimationFrame(()=>drawDetailChart(canvas,r.pigeons));
   expTr.querySelector('.btn-detail').addEventListener('click',()=>openDetailModal(r));
 }
 
@@ -1482,6 +1489,7 @@ renderSessionTable();
 renderRingsTable();
 initRandomResults();
 renderResultsTable();
+document.querySelector('.brand').addEventListener('click', () => showPage('tracking'));
 $('btn-detail-close').addEventListener('click',closeDetailModal);
 $('detail-modal').addEventListener('click',e=>{if(e.target===$('detail-modal'))closeDetailModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetailModal();});
