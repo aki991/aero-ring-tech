@@ -780,6 +780,10 @@ footer {
 @media (max-width:768px) {
   /* Body: footer row becomes spacer matching fixed bottom nav height */
   body { grid-template-rows:54px 0 1fr calc(58px + env(safe-area-inset-bottom)); overflow-x:hidden; }
+  /* position:fixed removes nav from grid auto-placement, so pages would
+     fall into the 0px row — pin both explicitly to their correct rows */
+  #pages { grid-row:3; }
+  footer { grid-row:4; }
 
   /* ── Header ── */
   header { min-height:54px; height:54px; padding:0 12px; }
@@ -843,13 +847,33 @@ footer {
   /* ── PAGE 2 — Device ── */
   .info-grid { grid-template-columns:repeat(2,1fr); }
 
-  /* ── PAGE 3 — Rings ── */
-  .rings-layout { grid-template-columns:1fr; grid-template-rows:auto 1fr; }
-  .rings-left { border-right:none; border-bottom:1px solid var(--border); padding:14px; max-height:45vh; }
-  .rings-right { padding:14px; }
+  /* ── PAGE 3 — Rings: single continuous scroll column ── */
+  /* Both sections must always be visible — no height caps, no grid clipping */
+  #page-rings { overflow-y:auto; overflow-x:hidden; }
+  .rings-layout {
+    display:flex; flex-direction:column;
+    height:auto; min-height:100%; overflow:visible;
+  }
+  .rings-left {
+    flex:none; max-height:none; overflow-y:visible; overflow-x:hidden;
+    border-right:none; border-bottom:1px solid var(--border);
+    padding:14px; gap:12px;
+  }
+  .rings-right { flex:none; overflow-y:visible; overflow-x:hidden; padding:14px; gap:12px; }
+  /* Compact ring-reader card */
+  .ring-reader { padding:14px 16px; gap:12px; }
+  .ring-anim { width:52px; height:52px; }
+  .ring-id-box { padding:8px 14px; min-width:0; width:100%; font-size:.9rem; }
+  /* Compact owner form */
+  .form-block { padding:12px; gap:8px; }
+  .form-row { gap:4px; }
+  .form-row input { min-height:42px; padding:8px 12px; font-size:1rem; }
+  .btn-save-ring { padding:10px; font-size:.85rem; min-height:44px; }
+  /* Session wrap: don't cap height on mobile, let it flow */
+  .rings-session-wrap { max-height:none; overflow-y:visible; }
+  /* Tables scrollable horizontally */
   .rings-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  .data-table { min-width:380px; }
-  .form-row input { min-height:44px; font-size:1rem; }
+  .data-table { min-width:320px; }
 
   /* ── PAGE 4 — Results ── */
   .results-toolbar { padding:12px 14px 0; gap:6px; }
