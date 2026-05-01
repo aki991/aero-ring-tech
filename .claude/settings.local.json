@@ -4,7 +4,11 @@
       "Bash(npm i *)",
       "Bash(Get-ChildItem -Recurse -Directory)",
       "Bash(Sort-Object FullName)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Andreja\\\\Desktop\\\\golub-tracker\" -Force)",
+      "Bash(Select-Object Name, FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Andreja\\\\Desktop\\\\golub-tracker\" -Force | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"Dir\"}else{\"File\"}}} | Format-Table -AutoSize)"
     ]
   }
 }
