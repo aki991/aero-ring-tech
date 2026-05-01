@@ -39,6 +39,7 @@ const T = {
     p3SessionEmpty:'Nema prstenova detektovanih u ovoj sesiji.',
     p3SessionColID:'ID prstena', p3SessionColSlot:'Slot', p3SessionColTime:'Vreme',
     p3SessionHint:'Kliknite na red da izaberete prsten za programiranje →',
+    p3EditBtn:'Izmeni', p3UpdateBtn:'Sačuvaj izmene', p3UpdSuccess:'Prsten uspešno ažuriran',
     // ── Results page ──
     p4Title:'Rezultati simulacije', p4Add:'Dodaj rezultat',
     p4Export:'Izvezi u CSV', p4DeleteAll:'Obriši sve',
@@ -64,6 +65,7 @@ const T = {
     btnLogin:'Prijavi se', btnRegister:'Registruj se',
     dividerOr:'ili',
     btnGuest:'Nastavi kao gost — samo rezultati →',
+    rememberMe:'Zapamti me',
     // ── Auth error codes ──
     ERR_FILL_ALL:          'Popunite sva obavezna polja.',
     ERR_PASS_TOO_SHORT:    'Lozinka mora imati minimum 6 karaktera.',
@@ -122,6 +124,7 @@ const T = {
     p3SessionEmpty:'No rings detected in this session.',
     p3SessionColID:'Ring ID', p3SessionColSlot:'Slot', p3SessionColTime:'Time',
     p3SessionHint:'Click a row to select a ring for programming →',
+    p3EditBtn:'Edit', p3UpdateBtn:'Save changes', p3UpdSuccess:'Ring updated successfully',
     // ── Results page ──
     p4Title:'Simulation results', p4Add:'Add result',
     p4Export:'Export CSV', p4DeleteAll:'Delete all',
@@ -147,6 +150,7 @@ const T = {
     btnLogin:'Sign in', btnRegister:'Register',
     dividerOr:'or',
     btnGuest:'Continue as guest — results only →',
+    rememberMe:'Remember me',
     // ── Auth error codes ──
     ERR_FILL_ALL:          'Please fill all required fields.',
     ERR_PASS_TOO_SHORT:    'Password must be at least 6 characters.',
@@ -190,6 +194,8 @@ let currentRingId = null;
 let expandedResultOrig = null;
 let searchQuery = '';
 let quickSort = null; // 'newest' | 'longest' | 'highest' | null
+let editingRingIndex = null;      // null = create; number = update existing entry
+const programmedRingIds = new Set(); // ring IDs saved to an owner this session
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -286,6 +292,7 @@ function applyLang() {
   $('sim-btn-txt').textContent = sim.active ? T[lang].btnSimStop : T[lang].btnSimStart;
   ptsCount.textContent = T[lang].graphPoints(pigeons.reduce((s,p)=>s+p.pts.length,0));
   $('btn-lang').textContent = lang === 'sr' ? 'EN' : 'SR';
+  $('login-lang-btn').textContent = lang === 'sr' ? 'EN' : 'SR';
   renderLegend();
   // Re-translate role badge text when language switches
   const { authenticated, user } = Auth.getState();
@@ -297,6 +304,7 @@ function applyLang() {
   renderSessionTable();
   renderRingsTable();
   renderResultsTable();
+  updateSaveBtnLabel();
 }
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
@@ -308,7 +316,8 @@ function applyTheme() {
   $('ico-sun').style.display  = d ? 'none'  : 'block';
 }
 $('btn-theme').addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); });
-$('btn-lang').addEventListener('click',  () => { lang  = lang  === 'sr'   ? 'en'    : 'sr';   applyLang(); });
+$('btn-lang').addEventListener('click',       () => { lang = lang === 'sr' ? 'en' : 'sr'; applyLang(); });
+$('login-lang-btn').addEventListener('click', () => { lang = lang === 'sr' ? 'en' : 'sr'; applyLang(); });
 
 // ─── LoRa Gateway (shared) ────────────────────────────────────────────────────
 function syncLoraUI() {
@@ -394,7 +403,7 @@ function resetConBtns() {
   $('p2-btn-connect').querySelector('span').textContent = T[lang].btnConnect;
 }
 
-btnCon.addEventListener('click', doConnect);
+btnCon.addEventListener('click', () => { doConnect(); initiateLoraHandshake(); });
 btnDis.addEventListener('click', () => { doDisconnect(); terminateLoraHandshake(); });
 $('p2-btn-connect').addEventListener('click', () => { doConnect(); initiateLoraHandshake(); });
 $('p2-btn-disconnect').addEventListener('click', () => { doDisconnect(); terminateLoraHandshake(); });
@@ -628,8 +637,10 @@ $('btn-read-ring').addEventListener('click', () => {
     readingRingTimer = null;
     anim.classList.remove('reading');
     currentRingId = 'ART-' + Array.from({length:6},()=>'0123456789ABCDEF'[Math.floor(Math.random()*16)]).join('');
+    editingRingIndex = null;
     $('ring-id-display').textContent = currentRingId;
     $('btn-save-ring').disabled = false;
+    updateSaveBtnLabel();
     readingRing = false;
   }, 1800);
 });
@@ -639,24 +650,68 @@ $('btn-save-ring').addEventListener('click', () => {
   const cl = $('ring-club').value.trim();
   if (!currentRingId) { showToast(T[lang].toastReadFirst,'err'); return; }
   if (!fn || !ln || !cl) { showToast(T[lang].toastFillAll,'err'); return; }
-  rings.push({ ringId:currentRingId, firstName:fn, lastName:ln, club:cl, time:new Date() });
+
+  if (editingRingIndex !== null) {
+    // ── Update existing record ─────────────────────────────────────────────
+    rings[editingRingIndex] = { ...rings[editingRingIndex], firstName:fn, lastName:ln, club:cl };
+    editingRingIndex = null;
+    showToast(T[lang].p3UpdSuccess, 'ok');
+  } else {
+    // ── Create new record ──────────────────────────────────────────────────
+    rings.push({ ringId:currentRingId, firstName:fn, lastName:ln, club:cl, time:new Date() });
+    programmedRingIds.add(currentRingId);
+    renderSessionTable(); // lock the source session row
+    showToast(T[lang].toastRingSaved, 'ok');
+  }
+
   renderRingsTable();
+  document.querySelector('.form-block').classList.remove('editing');
   $('ring-first').value=''; $('ring-last').value=''; $('ring-club').value='';
   $('ring-id-display').textContent='— — —';
   $('btn-save-ring').disabled=true;
   currentRingId=null;
-  showToast(T[lang].toastRingSaved,'ok');
+  updateSaveBtnLabel();
 });
 function renderRingsTable() {
   const tbody = $('rings-tbody'); tbody.innerHTML='';
   if (!rings.length) {
-    tbody.innerHTML=`<tr class="empty-row"><td colspan="4">${T[lang].p3EmptyRow}</td></tr>`; return;
+    tbody.innerHTML=`<tr class="empty-row"><td colspan="5">${T[lang].p3EmptyRow}</td></tr>`; return;
   }
-  rings.forEach(r => {
+  rings.forEach((r, i) => {
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="badge badge-ring">${r.ringId}</span></td><td>${r.firstName} ${r.lastName}</td><td>${r.club}</td><td>${fmtTime(r.time)}</td>`;
+    tr.innerHTML=`
+      <td><span class="badge badge-ring">${r.ringId}</span></td>
+      <td>${r.firstName} ${r.lastName}</td>
+      <td>${r.club}</td>
+      <td>${fmtTime(r.time)}</td>
+      <td><button class="row-edit" data-idx="${i}" title="${T[lang].p3EditBtn}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button></td>`;
     tbody.appendChild(tr);
   });
+  tbody.querySelectorAll('.row-edit').forEach(btn => {
+    btn.addEventListener('click', () => loadRingForEdit(+btn.dataset.idx));
+  });
+}
+
+function updateSaveBtnLabel() {
+  const span = document.querySelector('#btn-save-ring [data-i18n]');
+  if (span) span.textContent = editingRingIndex !== null ? T[lang].p3UpdateBtn : T[lang].p3SaveBtn;
+}
+
+function loadRingForEdit(index) {
+  const r = rings[index];
+  editingRingIndex = index;
+  currentRingId = r.ringId;
+  $('ring-first').value = r.firstName;
+  $('ring-last').value  = r.lastName;
+  $('ring-club').value  = r.club;
+  $('ring-id-display').textContent = r.ringId;
+  $('btn-save-ring').disabled = false;
+  document.querySelector('.form-block').classList.add('editing');
+  updateSaveBtnLabel();
+  if (currentPage !== 'rings') showPage('rings');
+  $('ring-first').focus();
 }
 
 // ─── Session Ring Detection ───────────────────────────────────────────────────
@@ -673,9 +728,13 @@ function selectSessionRing(ringId) {
     readingRing = false;
     $('ring-anim').classList.remove('reading');
   }
+  // Leave edit mode — user is now targeting a different ring
+  editingRingIndex = null;
+  document.querySelector('.form-block').classList.remove('editing');
   currentRingId = ringId;
   $('ring-id-display').textContent = ringId;
   $('btn-save-ring').disabled = false;
+  updateSaveBtnLabel();
   // Brief flash on the ID display to confirm selection
   const box = $('ring-id-display');
   box.classList.remove('highlight');
@@ -693,18 +752,23 @@ function renderSessionTable() {
     return;
   }
   [...sessionRings].reverse().forEach((r, displayIdx) => {
-    const origIdx = sessionRings.length - 1 - displayIdx;
-    const isSelected = currentRingId === r.ringId;
+    const origIdx     = sessionRings.length - 1 - displayIdx;
+    const isProgrammed = programmedRingIds.has(r.ringId);
+    const isSelected  = currentRingId === r.ringId && !isProgrammed;
     const tr = document.createElement('tr');
-    tr.className = 'session-ring-row' + (isSelected ? ' selected' : '');
+    tr.className = 'session-ring-row'
+      + (isSelected   ? ' selected'   : '')
+      + (isProgrammed ? ' programmed' : '');
     if (displayIdx === 0) tr.classList.add('newest');
+    const checkMark = isProgrammed ? '<span class="prog-check">✓</span>' : '';
     tr.innerHTML = `
-      <td><span class="badge badge-ring">${r.ringId}</span></td>
+      <td><span class="badge badge-ring">${r.ringId}</span>${checkMark}</td>
       <td>Slot ${r.slot + 1}</td>
       <td>${fmtTime(r.time)}</td>
       <td><button class="row-del session-del-btn" data-idx="${origIdx}" title="Obriši / Delete">✕</button></td>`;
     tr.addEventListener('click', e => {
       if (e.target.closest('.session-del-btn')) return;
+      if (isProgrammed) return; // locked — already saved to a person
       selectSessionRing(r.ringId);
     });
     tr.querySelector('.session-del-btn').addEventListener('click', e => {
@@ -1061,6 +1125,11 @@ $('login-form').addEventListener('submit', e => {
       $('login-pass').value
     );
     if (result.success) {
+      if ($('login-remember').checked) {
+        localStorage.setItem('art-remember-email', $('login-email').value.trim().toLowerCase());
+      } else {
+        localStorage.removeItem('art-remember-email');
+      }
       $('login-overlay').classList.remove('open');
       sessionStorage.removeItem('art-guest');
       applyAuthUI();
@@ -1303,8 +1372,11 @@ function _emulatorRingRead(ringId) {
     readingRingTimer = null;
     $('ring-anim').classList.remove('reading');
     currentRingId = ringId;
+    editingRingIndex = null;
+    document.querySelector('.form-block').classList.remove('editing');
     $('ring-id-display').textContent = ringId;
     $('btn-save-ring').disabled = false;
+    updateSaveBtnLabel();
     readingRing = false;
   }, 600);
 }
@@ -1402,6 +1474,9 @@ function _emulatorInjectAlt(pigeonIdx, altitude) {
 applyTheme();
 applyAuthUI();     // show login overlay / restrict tabs before any render
 applyLang();
+// Restore remembered email (pre-fill login form if user previously checked "Remember me")
+const _savedEmail = localStorage.getItem('art-remember-email');
+if (_savedEmail) { $('login-email').value = _savedEmail; $('login-remember').checked = true; }
 syncLoraUI();
 renderSessionTable();
 renderRingsTable();

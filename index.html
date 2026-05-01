@@ -220,6 +220,7 @@
                 <th data-i18n="p3ColName"></th>
                 <th data-i18n="p3ColClub"></th>
                 <th data-i18n="p3ColTime"></th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="rings-tbody"></tbody>
@@ -316,6 +317,7 @@
 <!-- ── LOGIN OVERLAY ── -->
 <div class="login-overlay" id="login-overlay">
   <div class="login-card">
+    <button class="login-lang-btn" id="login-lang-btn">EN</button>
     <img class="login-logo" src="Logo.png" alt="ART Logo">
     <div class="login-brand">Aero Ring Tech</div>
     <div class="login-tagline">The Art of Flight</div>
@@ -335,6 +337,10 @@
       <div class="login-field">
         <label for="login-pass" data-i18n="fldPassword">Lozinka</label>
         <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <div class="login-remember-row">
+        <input type="checkbox" id="login-remember" class="login-remember-chk">
+        <label for="login-remember" data-i18n="rememberMe">Zapamti me</label>
       </div>
       <div class="login-msg login-error" id="login-error"></div>
       <button type="submit" class="login-submit" id="login-btn">
